@@ -10,6 +10,7 @@
 #include <exception>
 #include <functional>
 
+
 #ifdef _MSC_VER
 class __declspec(dllexport) Formula
 #else
@@ -145,5 +146,4 @@ double Formula::operator ()(DataTypes... varargin)
 {
     return eval(varargin...);
 }
-
-#endif
+#endif // !_MSC_VER

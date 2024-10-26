@@ -1,4 +1,4 @@
-#include "formula.h"
+#include <formula.hpp>
 
 #include <stack>
 #include <cmath>
