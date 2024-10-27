@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.27)
 
-include(GNUInstallDirs)
+# include(GNUInstallDirs)
 
 set(ADDITIONAL_MODULES_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${ADDITIONAL_MODULES_DIR}")
