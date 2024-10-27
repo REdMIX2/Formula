@@ -1,11 +1,11 @@
 #include <token.hpp>
-// #include <unordered_set>
+
 using namespace std;
 namespace formula
 {
     namespace token
     {
-        const static unordered_set<char> Token::s_supported_chars =
+        const unordered_set<char> Token::s_supported_chars =
             {
                 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
                 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -14,23 +14,23 @@ namespace formula
                 '+', '-', '*', '/', '^', '(', ')', '0', '1', '2', '3', '4', '5',
                 '6', '7', '8', '9', '0', '.', ' ', '\t', '\r', '\n'};
 
-        bool Token::isNumber(char ch) 
+        bool Token::isNumber(char ch)
         {
             return ((ch >= '0' && ch <= '9') || ch == '.');
         }
 
-        bool Token::isOperator(char ch) 
+        bool Token::isOperator(char ch)
         {
             return (ch == '+' || ch == '-' || ch == '*' || ch == '/' ||
                     ch == '^' || ch == '#' || ch == '(' || ch == ')');
         }
 
         Token::Token() : type(Token::Error),
-                                  data(0.0) {}
+                         data(0.0) {}
 
         Token::Token(Token::Type _type, const string &_name, double _data) : type(_type),
-                                                                                      name(_name),
-                                                                                      data(_data) {}
+                                                                             name(_name),
+                                                                             data(_data) {}
 
         Token::Token(char ch)
         {
@@ -48,7 +48,7 @@ namespace formula
         }
 
         Token::Token(double _data) : type(Token::Number),
-                                              data(_data) {}
+                                     data(_data) {}
 
         Token::Token(const string &_name) : name(_name)
         {

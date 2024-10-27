@@ -35,7 +35,7 @@ namespace formula
             static bool isOperator(char ch);
 
         public:
-            const static unordered_set<char> s_supported_chars;
+            static const std::unordered_set<char> s_supported_chars;
         };
 
     };
