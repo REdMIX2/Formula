@@ -46,6 +46,7 @@ target_include_directories(${PROJECT_NAME}
 
 if(FORMULA_OPT_BUILD_EXAMPLES)
     add_subdirectory(Example)
+    add_subdirectory(benchmark)
 endif()
 
 if(FORMULA_OPT_INSTALL)
