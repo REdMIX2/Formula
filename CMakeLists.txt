@@ -12,6 +12,9 @@ project(formula
     LANGUAGES CXX
 )
 
+# Set global variables 
+set_property(GLOBAL PROPERTY MAIN_PROJECT_NAME ${PROJECT_NAME})
+
 set(CPACK_PACKAGE_VENDOR "Time-Coder and Egor Petnichuk")
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
