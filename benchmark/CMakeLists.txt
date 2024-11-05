@@ -4,8 +4,15 @@ project(benchmarksFormula LANGUAGES CXX)
 # Global properties
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+CPMAddPackage("gh:cpm-cmake/testpack-fibonacci@2.0")
 # Add benchmark lib
-add_subdirectory(CppBenchmark)
+CPMAddPackage(
+  NAME benchmark
+  GITHUB_REPOSITORY google/benchmark
+  VERSION 1.7.1
+  OPTIONS "BENCHMARK_ENABLE_TESTING Off"
+)
+
 
 # Compile examples
 file(GLOB EXAMPLE_HEADER_FILES "examples/*.h")
@@ -24,8 +31,7 @@ foreach(EXAMPLE_SOURCE_FILE ${EXAMPLE_SOURCE_FILES})
 
    add_executable(${EXAMPLE_TARGET} ${EXAMPLE_HEADER_FILES} ${EXAMPLE_INLINE_FILES} "examples/${EXAMPLE_SOURCE_FILE}")
    set_target_properties(${EXAMPLE_TARGET} PROPERTIES COMPILE_FLAGS "${PEDANTIC_COMPILE_FLAGS}" FOLDER "benchmarksFormulaExamples")
-   
-   target_link_libraries(${EXAMPLE_TARGET} PUBLIC cppbenchmark)
+   target_link_libraries(${EXAMPLE_TARGET} PUBLIC benchmark)
    target_link_libraries(${EXAMPLE_TARGET} PUBLIC ${MAIN_PROJECT_NAME})
 
    list(APPEND INSTALL_TARGETS ${EXAMPLE_TARGET})

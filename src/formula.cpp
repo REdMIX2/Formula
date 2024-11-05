@@ -283,7 +283,8 @@ namespace formula
 		unordered_map<string, double> variables;
 		for (const string &name : m_found_variables)
 		{
-			if (!m_defined_variables.count(name))
+			if (!m_defined_variables.count(name) &&
+				!valid_functions::s_built_in_variables.count(name))
 			{
 				if (i >= vector_variables.size())
 				{
