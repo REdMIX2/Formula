@@ -4,7 +4,6 @@ project(benchmarksFormula LANGUAGES CXX)
 # Global properties
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-CPMAddPackage("gh:cpm-cmake/testpack-fibonacci@2.0")
 # Add benchmark lib
 CPMAddPackage(
   NAME benchmark

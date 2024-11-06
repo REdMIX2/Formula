@@ -1,0 +1,30 @@
+2024-11-07T00:33:04+03:00
+Running Formula/build/benchmark/formula-example-benchmarkParse
+Run on (8 X 2295.62 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x4)
+  L1 Instruction 64 KiB (x4)
+  L2 Unified 512 KiB (x4)
+  L3 Unified 4096 KiB (x1)
+Load Average: 0.69-0.76, 0.43-0.51, 0.28-0.32
+***WARNING*** Library was built as DEBUG. Timings may be affected.
+-----------------------------------------------------------------------------
+Benchmark                                   Time             CPU   Iterations
+-----------------------------------------------------------------------------
+BM_ParseFormula/iterations:1000000   33192-32558 ns  33192-32557 ns   1000000
+BM_EvalFormula/iterations:1000000    8318-8433 ns    8318-8433 ns     1000000
+
+2024-11-07T00:39:40+03:00
+Running /home/ibah9/Formula/build/benchmark/formula-example-benchmarkParse
+Run on (8 X 2295.62 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x4)
+  L1 Instruction 64 KiB (x4)
+  L2 Unified 512 KiB (x4)
+  L3 Unified 4096 KiB (x1)
+Load Average: 1.44-1.31, 0.73-0.75, 0.45-0.46
+-----------------------------------------------------------------------------
+Benchmark                                   Time             CPU   Iterations
+-----------------------------------------------------------------------------
+BM_ParseFormula/iterations:1000000    2881-3145 ns    2881-3145 ns    1000000
+BM_EvalFormula/iterations:1000000     699-773 ns      699-773 ns      1000000
