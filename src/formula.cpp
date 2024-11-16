@@ -4,6 +4,7 @@
 
 #include <formula.hpp>
 #include "built_in.cpp"
+#include "utils.cpp"
 
 using namespace std;
 namespace formula
@@ -311,10 +312,10 @@ namespace formula
 	void Formula::preprocess(string &str)
 	{
 		// TODO Refactor code
-		unsigned i = 0;
 
 		// Delete all spaces in string.
-		for (auto it = str.begin(); it != str.end();)
+		utils::strip(str, Token::isNeedChar);
+		for (auto it = str.begin(); it != str.end(); it++)
 		{
 			if (Token::s_supported_chars.count(*it) == 0)
 			{
@@ -322,25 +323,17 @@ namespace formula
 				error_char.push_back(*it);
 				throw Exception(Exception::NOT_SUPPORTED_CHARACTER, error_char);
 			}
-
-			if (*it == ' ' || *it == '\t' || *it == '\n' || *it == '\r')
-			{
-				it = str.erase(it);
-			}
-			else
-			{
-				it++;
-			}
 		}
 
 		// If the first char of this string is '-', add '0' before '-'.
-		i = 0;
+		unsigned i = 0;
 		if (str[i] == '-')
 		{
 			str.insert(i, "0");
 		}
 
 		// Change structure "(-" into "(0-".
+		// TODO: add replace function
 		while (i != str.size())
 		{
 			if (i + 1 < str.size() && (str[i] == '(' && str[i + 1] == '-'))

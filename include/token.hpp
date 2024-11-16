@@ -33,6 +33,7 @@ namespace formula
             int outerPriority() const;
             static bool isNumber(char ch);
             static bool isOperator(char ch);
+            static bool isNeedChar(char ch);
 
         public:
             static const std::unordered_set<char> s_supported_chars;

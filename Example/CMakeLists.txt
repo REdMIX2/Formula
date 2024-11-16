@@ -18,3 +18,5 @@ function(make_example target)
 endfunction()
 
 make_example(main)
+# make_example(ex2)
+make_example(testOptimize)

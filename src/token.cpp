@@ -24,7 +24,19 @@ namespace formula
             return (ch == '+' || ch == '-' || ch == '*' || ch == '/' ||
                     ch == '^' || ch == '#' || ch == '(' || ch == ')');
         }
-
+        bool Token::isNeedChar(char ch)
+        {
+            switch (ch)
+            {
+            case ' ':
+            case '\t':
+            case '\n':
+            case '\r':
+                return false;
+            default:
+                return true;
+            }
+        }
         Token::Token() : type(Token::Error),
                          data(0.0) {}
 
