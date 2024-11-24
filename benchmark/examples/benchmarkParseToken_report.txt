@@ -1,0 +1,50 @@
+2024-11-25T00:19:32+03:00
+Running /home/ibah9/Formula/build/benchmark/formula-example-benchmarkParseToken
+Run on (8 X 2295.7 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x4)
+  L1 Instruction 64 KiB (x4)
+  L2 Unified 512 KiB (x4)
+  L3 Unified 4096 KiB (x1)
+Load Average: 0.68, 0.82, 0.57
+***WARNING*** Library was built as DEBUG. Timings may be affected.
+----------------------------------------------------------------------------------
+Benchmark                                        Time             CPU   Iterations
+----------------------------------------------------------------------------------
+BM_ParseTokenOldThow/iterations:1000000      51777 ns        51777 ns      1000000
+BM_ParseToken/iterations:1000000              5109 ns         5109 ns      1000000
+BM_ParseTokenOld/iterations:1000000           4870 ns         4870 ns      1000000
+
+
+2024-11-25T00:21:54+03:00
+Running /home/ibah9/Formula/build/benchmark/formula-example-benchmarkParseToken
+Run on (8 X 2295.7 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x4)
+  L1 Instruction 64 KiB (x4)
+  L2 Unified 512 KiB (x4)
+  L3 Unified 4096 KiB (x1)
+Load Average: 1.89, 1.10, 0.71
+----------------------------------------------------------------------------------
+Benchmark                                        Time             CPU   Iterations
+----------------------------------------------------------------------------------
+BM_ParseTokenOldThow/iterations:1000000      41858 ns        41858 ns      1000000
+BM_ParseToken/iterations:1000000               142 ns          142 ns      1000000
+BM_ParseTokenOld/iterations:1000000            126 ns          126 ns      1000000
+
+
+2024-11-25T00:23:22+03:00
+Running /home/ibah9/Formula/build/benchmark/formula-example-benchmarkParseToken
+Run on (8 X 2295.7 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x4)
+  L1 Instruction 64 KiB (x4)
+  L2 Unified 512 KiB (x4)
+  L3 Unified 4096 KiB (x1)
+Load Average: 0.68, 0.93, 0.69
+----------------------------------------------------------------------------------
+Benchmark                                        Time             CPU   Iterations
+----------------------------------------------------------------------------------
+BM_ParseTokenOldThow/iterations:1000000      40779 ns        40779 ns      1000000
+BM_ParseToken/iterations:1000000               145 ns          145 ns      1000000
+BM_ParseTokenOld/iterations:1000000            146 ns          146 ns      1000000
