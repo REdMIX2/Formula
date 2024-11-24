@@ -311,10 +311,10 @@ namespace formula
 
 	void Formula::preprocess(string &str)
 	{
-		// TODO Refactor code
-
 		// Delete all spaces in string.
 		utils::strip(str, Token::isNeedChar);
+
+		// Check supported character
 		for (auto it = str.begin(); it != str.end(); it++)
 		{
 			if (Token::s_supported_chars.count(*it) == 0)
@@ -326,25 +326,16 @@ namespace formula
 		}
 
 		// If the first char of this string is '-', add '0' before '-'.
-		unsigned i = 0;
-		if (str[i] == '-')
+		if (str[0] == '-')
 		{
-			str.insert(i, "0");
+			str.insert(0, "0");
 		}
 
 		// Change structure "(-" into "(0-".
-		// TODO: add replace function
-		while (i != str.size())
-		{
-			if (i + 1 < str.size() && (str[i] == '(' && str[i + 1] == '-'))
-			{
-				str.insert(i + 1, "0");
-			}
-			i++;
-		}
+		utils::replace(str, "(-", "(0-");
 
 		// Add "#" in the tail of string.
-		str = str + "#";
+		str += "#";
 	}
 
 	Token Formula::getNumber(const string &str, int &i)
@@ -415,20 +406,25 @@ namespace formula
 		// Refactor code
 		while (i < n || operators.top().name != "#")
 		{
-			if (token.type == Token::Error)
+			switch (token.type)
+			{
+			case Token::Error:
 			{
 				throw Exception(Exception::NOT_SUPPORTED_TOKEN, token.name);
+				break;
 			}
-
-			if (token.type == Token::Number || token.type == Token::Variable)
+			case Token::Number:
+			case Token::Variable:
 			{
 				m_postfix.push_back(token);
 				token = getToken(m_formula_string, i);
+				break;
 			}
-			else
+			default:
 			{
 				int outer_priority = token.outerPriority();
 				int inner_priority = operators.top().innerPriority();
+				
 				if (outer_priority > inner_priority)
 				{
 					operators.push(token);
@@ -441,16 +437,19 @@ namespace formula
 				}
 				else // if( outer_priority == inner_priority )
 				{
-					Token token_temp = operators.top();
-					operators.pop();
+					const Token &token_temp = operators.top();
 					if (token_temp.name == "(")
 					{
 						token = getToken(m_formula_string, i);
 					}
+					operators.pop();
 				}
+				break;
+			}
 			}
 		}
 	}
+
 	ostream &operator<<(ostream &o, const formula::Formula &f)
 	{
 		o << f.m_formula_string;

@@ -8,7 +8,7 @@ namespace formula
     namespace utils
     {
         template <typename Predicate>
-        void strip(std::string &s, const Predicate addIf)
+        inline void strip(std::string &s, const Predicate addIf)
         {
             std::string sTmp(std::move(s));
 
@@ -17,60 +17,87 @@ namespace formula
                          std::back_inserter(s),
                          addIf);
         }
-        // template <typename _InputIterator, typename _OutputIterator,
-        //           typename _Predicate>
 
-        void replace(std::string &s, const std::string find, const std::string replace)
+        inline std::vector<size_t> findPositions(const std::string &s, const std::string &substr, size_t startPos = 0)
         {
-            if (find.length() < replace.length())
+            std::vector<size_t> positions;
+            for (size_t i = s.find(substr, startPos); i != std::string::npos; i = s.find(substr, i + substr.size()))
             {
-                const unsigned sizeReplace = replace.length();
-                const std::string &cReplace = replace;
+                positions.push_back(i);
+            }
+            return positions;
+        }
 
-                std::size_t i = s.find(find);
-                while (i != std::string::npos)
+        inline uint count(const std::string &s, const std::string &substr, size_t startPos = 0)
+        {
+            size_t cnt = 0;
+            for (size_t i = s.find(substr, startPos); i != std::string::npos; i = s.find(substr, i + substr.size()))
+            {
+                ++cnt;
+            }
+            return cnt;
+        }
+
+        inline void replace(std::string &s, const std::string &before, const std::string &after)
+        {
+            const size_t sizeBefore = before.size();
+            const size_t sizeAfter = after.size();
+
+            if (sizeBefore > sizeAfter)
+            {
+                size_t preLastIndex = 0;
+                size_t newSize = 0;
+
+                for (size_t i = s.find(before); i != std::string::npos; i = s.find(before, i + sizeBefore))
                 {
-                    std::memcpy(&s[i], &cReplace[0], sizeReplace);
-                    i = s.find(find);
+                    // copy last notBeforeStr
+                    std::memcpy(&s[newSize], &s[preLastIndex], i - preLastIndex);
+                    newSize += (i - preLastIndex);
+                    // copy afterStr
+                    std::memcpy(&s[newSize], &after[0], sizeAfter);
+                    newSize += sizeAfter;
+
+                    preLastIndex = i + sizeBefore;
+                }
+                // copy last notBeforeStr
+                std::memcpy(&s[newSize], &s[preLastIndex], s.size() - preLastIndex);
+                newSize += (s.size() - preLastIndex);
+
+                s.resize(newSize);
+            }
+            else if (sizeBefore == sizeAfter)
+            {
+                for (size_t i = s.find(before); i != std::string::npos; i = s.find(before, i + sizeBefore))
+                {
+                    std::memcpy(&s[i], &after[0], sizeAfter);
                 }
             }
-            else if (find.length() == replace.length())
-            {
-                const unsigned sizeReplace = replace.length();
-                const std::string &cReplace = replace;
-
-                std::size_t i = s.find(find);
-                while (i != std::string::npos)
+            else //(sizeBefore > sizeAfter)
+            {    // Not optimize for flash
+                std::vector<size_t> positions = findPositions(s, before);
+                if (positions.empty())
                 {
-                    std::memcpy(&s[i], &cReplace[0], sizeReplace);
-                    i = s.find(find, i);
+                    return;
                 }
-            }
-            else //(find.length() > replace.length())
-            {
-                const size_t sizeReplace = replace.size();
-                const size_t sizeTarget = find.size();
-                const std::string &cReplace = replace;// by optimization
 
-                size_t indexOldStr = s.find(find);
-                size_t indexNewStr = indexOldStr;
-                while (indexOldStr != std::string::npos)
-                {
-                    std::memcpy(&s[indexNewStr], &cReplace[0], sizeReplace); // copy replace string
-                    indexNewStr += sizeReplace;
-                    indexOldStr += sizeTarget;
+                std::string sNew(s.size() + positions.size() * (sizeAfter - sizeBefore), '\0');
+                size_t preLastIndex = 0;
+                size_t newSize = 0;
 
-                    size_t nextFindIndexOldStr = s.find(find, indexOldStr);
-                    size_t sizePart = (nextFindIndexOldStr != std::string::npos) ? (nextFindIndexOldStr - indexOldStr) : (s.size() - indexOldStr);
-                    std::memcpy(&s[indexNewStr], &s[indexOldStr], sizePart); // copy last path source string
-                    indexNewStr += sizePart;
-                    indexOldStr = nextFindIndexOldStr;
-                }
-                // delete diff size find and replace substrings
-                if (indexNewStr != std::string::npos)
+                for (auto &pos : positions)
                 {
-                    s.resize(indexNewStr + 1);
+                    // copy last notBeforeStr
+                    std::memcpy(&sNew[newSize], &s[preLastIndex], pos - preLastIndex);
+                    newSize += (pos - preLastIndex);
+                    // copy afterStr
+                    std::memcpy(&sNew[newSize], &after[0], sizeAfter);
+                    newSize += sizeAfter;
+
+                    preLastIndex = pos + sizeBefore;
                 }
+                // copy last notBeforeStr
+                std::memcpy(&sNew[newSize], &s[preLastIndex], s.size() - preLastIndex);
+                s = std::move(sNew);
             }
         }
     };

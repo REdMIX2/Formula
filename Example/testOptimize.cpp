@@ -44,33 +44,123 @@ void UtilsRemove(string &s)
     }
 }
 
-int main()
+std::vector<size_t> findPositions(const std::string &s, const std::string &substr, size_t startPos = 0)
 {
-    std::string str;
-    str.resize(1000);
-    for (auto it = str.begin(); it != str.end();it++)
+    std::vector<size_t> positions;
+    size_t i = s.find(substr, startPos);
+    while (i != std::string::npos)
     {
-        if (rand() % 2)
+        positions.push_back(i);
+        i = s.find(substr, i + substr.size());
+    }
+    return positions;
+}
+uint count(const std::string &s, const std::string &substr, size_t pos = 0)
+{
+    size_t i = s.find(substr, pos);
+    size_t cnt = 0;
+    while (i != std::string::npos)
+    {
+        ++cnt;
+        i = s.find(substr, i + substr.size());
+    }
+    return cnt;
+}
+
+void replace(std::string &s, const std::string &before, const std::string &after)
+{
+    const size_t sizeBefore = before.size();
+    const size_t sizeAfter = after.size();
+
+    if (sizeBefore > sizeAfter)
+    {
+        size_t preLastIndex = 0;
+        size_t newSize = 0;
+
+        for (size_t i = s.find(before); i != std::string::npos; i = s.find(before, i + sizeBefore))
         {
-            *it = 'a';
+            // copy last notBeforeStr
+            std::memcpy(&s[newSize], &s[preLastIndex], i - preLastIndex);
+            newSize += (i - preLastIndex);
+            // copy afterStr
+            std::memcpy(&s[newSize], &after[0], sizeAfter);
+            newSize += sizeAfter;
+
+            preLastIndex = i + sizeBefore;
         }
-        else
+        // copy last notBeforeStr
+        std::memcpy(&s[newSize], &s[preLastIndex], s.size() - preLastIndex);
+        newSize += (s.size() - preLastIndex);
+
+        s.resize(newSize);
+    }
+    else if (sizeBefore == sizeAfter)
+    {
+        for (size_t i = s.find(before); i != std::string::npos; i = s.find(before, i + sizeBefore))
         {
-            *it = (rand() % 2) ? ' ' : '\t';
+            std::memcpy(&s[i], &after[0], sizeAfter);
         }
     }
-    string str2 = str;
+    else //(sizeBefore > sizeAfter)
+    {    // Not optimize for flash
 
-    auto start = system_clock::now();
-    strip(str2);
-    auto end = system_clock::now();
-    std::cout << "strip=" + to_string(duration_cast<nanoseconds>(start - end).count()) + "ns\n";
-    
-    start = system_clock::now();
-    UtilsRemove(str);
-    end = system_clock::now();
-    std::cout << "UtilsRemove=" + to_string(duration_cast<nanoseconds>(start - end).count()) + "ns\n";
-// UtilsRemove=-78499ns
-// strip=-104078ns
+        std::vector<size_t> positions = findPositions(s, before);
+        std::string sNew(s.size() + positions.size() * (sizeAfter - sizeBefore), '\0');
+
+        size_t preLastIndex = 0;
+        size_t newSize = 0;
+
+        for (auto &pos : positions)
+        {
+            // copy last notBeforeStr
+            std::memcpy(&sNew[newSize], &s[preLastIndex], pos - preLastIndex);
+            newSize += (pos - preLastIndex);
+            // copy afterStr
+            std::memcpy(&sNew[newSize], &after[0], sizeAfter);
+            newSize += sizeAfter;
+
+            preLastIndex = pos + sizeBefore;
+        }
+        // copy last notBeforeStr
+        std::memcpy(&sNew[newSize], &s[preLastIndex], s.size() - preLastIndex);
+        s = std::move(sNew);
+    }
+}
+
+int main()
+{
+    // std::string str;
+    // str.resize(1000);
+    // for (auto it = str.begin(); it != str.end();it++)
+    // {
+    //     if (rand() % 2)
+    //     {
+    //         *it = 'a';
+    //     }
+    //     else
+    //     {
+    //         *it = (rand() % 2) ? ' ' : '\t';
+    //     }
+    // }
+    // string str2 = str;
+
+    // auto start = system_clock::now();
+    // strip(str2);
+    // auto end = system_clock::now();
+    // std::cout << "strip=" + to_string(duration_cast<nanoseconds>(start - end).count()) + "ns\n";
+
+    // start = system_clock::now();
+    // UtilsRemove(str);
+    // end = system_clock::now();
+    // std::cout << "UtilsRemove=" + to_string(duration_cast<nanoseconds>(start - end).count()) + "ns\n";
+    // UtilsRemove=-78499ns
+    // strip=-104078ns
+
+    std::string s1 = "abcttttttabc dpab";
+    std::string s2 = "abcttttttabc dpab";
+    std::string s3 = "abcttttttabc dpab";
+    replace(s1, "abc", "1");
+    replace(s2, "b", "1");
+    replace(s3, "a", "aaa");
     return 0;
 }
