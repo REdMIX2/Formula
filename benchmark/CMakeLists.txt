@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.8)
 project(benchmarksFormula LANGUAGES CXX)
 
 # Global properties
@@ -49,25 +49,3 @@ if(MSVC)
       install(FILES $<TARGET_PDB_FILE:${INSTALL_TARGET_PDB}> DESTINATION "${PROJECT_SOURCE_DIR}/bin")
    endforeach()
 endif()
-
-
-# Install and link cppbenchmark:
-# git clone https://github.com/chronoxor/CppBenchmark.git
-# cd CppBenchmark
-# gil update
-
-# If gil not found, then:
-# sudo pip3 install --prefix /usr/local gil
-# echo 'PATH="$HOME/.local/bin/:$PATH"' >> ~/.bashrc
-# pip3 install gil
-
-# cd build
-# ./unix.sh
-
-# Create a new *.cpp file
-# Insert #include "benchmark/cppbenchmark.h"
-
-# Copy-paste example benchmark source code in cppbenchmark
-# Create CMakeLists.txt and add target link "cppbenchmark"
-
-# Compile
