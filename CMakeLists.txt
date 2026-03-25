@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.8)
+set(CMAKE_CXX_STANDARD 17)
 
 include(GNUInstallDirs)
 
@@ -6,7 +7,7 @@ set(ADDITIONAL_MODULES_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${ADDITIONAL_MODULES_DIR}")
 
 project(formula
-    VERSION "1.0.1"
+    VERSION "1.0.3"
     HOMEPAGE_URL "https://github.com/REdMIX2/Formula"
     DESCRIPTION "A library that provides macros and functions to obtain the name of a variable, type, function, macro, and enum."
     LANGUAGES CXX
