@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <set>
-#include <exception>
 #include <functional>
 
 
@@ -46,35 +45,6 @@ public:
 	friend std::ostream& operator <<(std::ostream& out_stream, const Formula& f);
 	friend std::istream& operator >>(std::istream& in_stream, Formula& f);
 
-public:
-	class Exception: public std::exception
-	{
-	public:
-        enum Type
-        {
-            UNKNOWN,
-            NOT_SUPPORTED_TOKEN,
-            NOT_ENOUGH_OPERANDS,
-            INTERNAL_ERROR,
-            NOT_DEFINED_FUNCTION,
-            WRONG_FORMAT,
-            NOT_DEFINED_VARIABLE,
-            DIVIDIED_BY_ZERO,
-            OUT_OF_RANGE,
-            EMPTY_STRING,
-            NOT_SUPPORTED_CHARACTER,
-		};
-
-		Exception(Type code = UNKNOWN, const std::string& _message = "", double _value = 0.0, const std::string& _interval = "");
-        const char* what() const throw();
-        std::string message()const;
-        Type type()const;
-
-    private:
-        Type m_type;
-		std::string m_message;
-	};
-
 private:
 	struct Token
 	{
@@ -109,10 +79,6 @@ private:
     void generatePostfix();
 
 private:
-	static const std::unordered_set<char> s_supported_chars;
-	static const std::unordered_map<std::string, double> s_built_in_variables;
-	static const std::unordered_map<std::string, std::function<double(double)> > s_built_in_functions;
-
 	std::vector<Token> m_postfix;
 	std::string m_formula_string;
 

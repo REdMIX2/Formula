@@ -1,20 +1,11 @@
-#include <formula.hpp>
+#include "../include/formula.hpp"
+#include "built_in.hpp"
 
 #include <stack>
 #include <cmath>
 #include <math.h>
 
 using namespace std;
-
-const unordered_set<char> Formula::s_supported_chars =
-{
-	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-	'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-	'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-	'+', '-', '*', '/', '^', '(', ')', '0', '1', '2', '3', '4', '5',
-	'6', '7', '8', '9', '0', '.', ' ', '\t', '\r', '\n'
-};
 
 static bool isZero(double x)
 {
@@ -24,58 +15,6 @@ static bool isZero(double x)
 static bool isNumber(char ch)
 {
     return ( (ch >= '0' && ch <= '9') || ch == '.');
-}
-
-static bool isOperator(char ch)
-{
-	return ( ch == '+' || ch == '-' || ch == '*' || ch == '/' ||
-			 ch == '^' || ch == '#' || ch == '(' || ch == ')'   );
-}
-
-Formula::Exception::Exception(Formula::Exception::Type _type, const std::string& _message, double _value, const std::string& _interval):
-	m_type(_type)
-{
-	switch (_type)
-    {
-    case UNKNOWN: m_message = "Unknown error occured"; break;
-    case NOT_SUPPORTED_TOKEN: m_message = ("Not suppored token: " + _message); break;
-    case NOT_ENOUGH_OPERANDS:
-    {
-        if (!_message.empty() && isOperator(_message[0]))
-        {
-            m_message = ("Not enough operands for operator " + _message);
-        }
-        else
-        {
-            m_message = ("Not enough operands for function " + _message);
-        }
-        break;
-    }
-    case INTERNAL_ERROR: m_message = "A programming error occured. Tell developer to check code."; break;
-    case NOT_DEFINED_FUNCTION: m_message = ("Not defined function: " + _message); break;
-    case WRONG_FORMAT: m_message = "Formula format is wrong"; break;
-    case NOT_DEFINED_VARIABLE: m_message = ("Not defined variable: " + _message); break;
-    case DIVIDIED_BY_ZERO: m_message = "Divided by zero"; break;
-    case OUT_OF_RANGE: m_message = ("Operand x = " + to_string(_value) + " is out of function " + _message + "'s domain: " + _interval); break;
-    case EMPTY_STRING: m_message = "Empty string"; break;
-    case NOT_SUPPORTED_CHARACTER: m_message = "Not suppored character: " + _message; break;
-    default: m_message = "Unknown error occured"; break;
-    }
-}
-
-const char* Formula::Exception::what() const throw()
-{
-    return m_message.c_str();
-}
-
-string Formula::Exception::message() const
-{
-    return m_message;
-}
-
-Formula::Exception::Type Formula::Exception::type()const
-{
-	return m_type;
 }
 
 vector<double> varargin2vector()
@@ -221,7 +160,7 @@ void Formula::check()const
 		{
 			case Token::Error:
 			{
-				throw Exception(Exception::NOT_SUPPORTED_TOKEN, token->name);
+				throw FormulaException(FormulaException::NOT_SUPPORTED_TOKEN, token->name);
 			}
 			case Token::Number:
 			case Token::Variable:
@@ -237,12 +176,12 @@ void Formula::check()const
 				   token->name != "/" &&
 				   token->name != "^")
 				{
-					throw Exception(Exception::WRONG_FORMAT, token->name);
+					throw FormulaException(FormulaException::WRONG_FORMAT, token->name);
 				}
 
 				if(operants.size() < 2)
 				{
-					throw Exception(Exception::NOT_ENOUGH_OPERANDS, token->name);
+					throw FormulaException(FormulaException::NOT_ENOUGH_OPERANDS, token->name);
 				}
 				
 				operants.pop();
@@ -252,14 +191,14 @@ void Formula::check()const
 			{
 				if(operants.empty())
 				{
-					throw Exception(Exception::NOT_ENOUGH_OPERANDS, token->name);
+					throw FormulaException(FormulaException::NOT_ENOUGH_OPERANDS, token->name);
 				}
 
 				operants.pop();
 
 				if(m_defined_functions.count(token->name) == 0)
 				{
-					throw Exception(Exception::NOT_DEFINED_FUNCTION, token->name);
+					throw FormulaException(FormulaException::NOT_DEFINED_FUNCTION, token->name);
 				}
 				operants.push(0);
 				break;
@@ -269,7 +208,7 @@ void Formula::check()const
 
     if(operants.size() != 1)
 	{
-		throw Exception(Exception::WRONG_FORMAT);
+		throw FormulaException(FormulaException::WRONG_FORMAT);
 	}
 }
 
@@ -331,7 +270,7 @@ double Formula::eval(const unordered_map<string, double>& variables)
 {
     if (m_postfix.empty())
     {
-        throw Exception(Exception::EMPTY_STRING);
+        throw FormulaException(FormulaException::EMPTY_STRING);
     }
 
 	stack<double> operants;
@@ -343,7 +282,7 @@ double Formula::eval(const unordered_map<string, double>& variables)
 		{
 			case Token::Error:
 			{
-				throw Exception(Exception::NOT_SUPPORTED_TOKEN, token->name);
+				throw FormulaException(FormulaException::NOT_SUPPORTED_TOKEN, token->name);
 			}
 			case Token::Number:
 			{
@@ -360,13 +299,13 @@ double Formula::eval(const unordered_map<string, double>& variables)
 				{
 					operants.push(m_defined_variables.at(token->name));
 				}
-				else if(s_built_in_variables.count(token->name) != 0)
+				else if(BuiltIn::s_built_in_variables().count(token->name) != 0)
 				{
-					operants.push(s_built_in_variables.at(token->name));
+					operants.push(BuiltIn::s_built_in_variables().at(token->name));
 				}
 				else
 				{
-					throw Exception(Exception::NOT_DEFINED_VARIABLE, token->name);
+					throw FormulaException(FormulaException::NOT_DEFINED_VARIABLE, token->name);
 				}
 				break;
 			}
@@ -378,12 +317,12 @@ double Formula::eval(const unordered_map<string, double>& variables)
 				   token->name != "/" &&
 				   token->name != "^")
 				{
-					throw Exception(Exception::WRONG_FORMAT);
+					throw FormulaException(FormulaException::WRONG_FORMAT);
 				}
 
 				if(operants.size() < 2)
 				{
-					throw Exception(Exception::NOT_ENOUGH_OPERANDS, token->name);
+					throw FormulaException(FormulaException::NOT_ENOUGH_OPERANDS, token->name);
 				}
 				
 				y = operants.top();
@@ -399,7 +338,7 @@ double Formula::eval(const unordered_map<string, double>& variables)
 				{
 					if(isZero(y))
 					{
-						throw Exception(Exception::DIVIDIED_BY_ZERO);
+						throw FormulaException(FormulaException::DIVIDIED_BY_ZERO);
 					}
 					operants.push(x / y);
 				}
@@ -407,7 +346,7 @@ double Formula::eval(const unordered_map<string, double>& variables)
 				{
 					if(isZero(x) && y < 0)
 					{
-                        throw Exception(Exception::DIVIDIED_BY_ZERO);
+                        throw FormulaException(FormulaException::DIVIDIED_BY_ZERO);
 					}
 					operants.push(pow(x, y));
 				}
@@ -418,7 +357,7 @@ double Formula::eval(const unordered_map<string, double>& variables)
 			{
 				if(operants.empty())
 				{
-					throw Exception(Exception::NOT_ENOUGH_OPERANDS, token->name);
+					throw FormulaException(FormulaException::NOT_ENOUGH_OPERANDS, token->name);
 				}
 
 				x = operants.top();
@@ -428,13 +367,13 @@ double Formula::eval(const unordered_map<string, double>& variables)
 				{
 					operants.push( m_defined_functions[token->name](x) );
 				}
-				else if(s_built_in_functions.count(token->name) != 0)
+				else if(BuiltIn::s_built_in_functions().count(token->name) != 0)
 				{
-					operants.push( s_built_in_functions.at(token->name)(x) );
+					operants.push(BuiltIn::s_built_in_functions().at(token->name)(x) );
 				}
 				else
 				{
-					throw Exception(Exception::NOT_DEFINED_FUNCTION, token->name);
+					throw FormulaException(FormulaException::NOT_DEFINED_FUNCTION, token->name);
 				}
 			}
 		}
@@ -442,7 +381,7 @@ double Formula::eval(const unordered_map<string, double>& variables)
 
     if(operants.size() != 1)
 	{
-		throw Exception(Exception::WRONG_FORMAT);
+		throw FormulaException(FormulaException::WRONG_FORMAT);
 	}
 	else
 	{
@@ -494,11 +433,11 @@ void Formula::preprocess(string& str)
 	// Delete all spaces in string.
 	for(auto it = str.begin(); it != str.end();)
 	{
-		if(s_supported_chars.count(*it) == 0)
+		if(BuiltIn::s_supported_chars().count(*it) == 0)
 		{
 			string error_char;
 			error_char.push_back(*it);
-			throw Exception(Exception::NOT_SUPPORTED_CHARACTER, error_char);
+			throw FormulaException(FormulaException::NOT_SUPPORTED_CHARACTER, error_char);
 		}
 
 		if(*it == ' ' || *it == '\t' || *it == '\n' || *it == '\r')
@@ -602,7 +541,7 @@ void Formula::generatePostfix()
 	{
 		if(token.type == Token::Error)
 		{
-			throw Exception(Exception::NOT_SUPPORTED_TOKEN, token.name);
+			throw FormulaException(FormulaException::NOT_SUPPORTED_TOKEN, token.name);
 		}
 		
 		if(token.type == Token::Number || token.type == Token::Variable)
